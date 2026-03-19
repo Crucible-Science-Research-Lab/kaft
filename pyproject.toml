@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kaft"
+version = "0.1.0"
+description = "Information geometry engine — Fisher-Rao manifolds, Jordan boundaries, K-density navigation"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Crucible Science", email = "hello@cruciblescience.com" }]
+keywords = ["information-geometry", "fisher-rao", "manifold", "kaft", "knowledge-dynamics"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "numpy>=1.24",
+    "scikit-learn>=1.3",
+    "sentence-transformers>=2.7",
+    "umap-learn>=0.5",
+    "scipy>=1.11",
+    "geomstats>=0.7",
+    "arxiv>=2.1", 
+]
+
+[project.optional-dependencies]
+molecular = ["rdkit>=2023.3"]
+dev = ["pytest", "black", "build", "twine"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["kaft*"]

@@ -1,0 +1,23 @@
+# Python environment — never commit
+kaftenv/
+__pycache__/
+*.pyc
+*.pyo
+.Python
+
+# Build artifacts — generated, not source
+dist/
+build/
+*.egg-info/
+
+# Saved manifold states — large binary-ish files, regeneratable
+kaft/experiments/geometric_state.json
+kaft/experiments/geometric_state_arxiv.json
+
+# Credentials — absolutely never
+.pypirc
+*.env
+.env
+
+# OS noise
+.DS_Store
