@@ -1,8 +1,8 @@
 """
-AbstractSimulator — the interface every simulation model implements.
+AbstractManifoldDynamics — the interface every simulation model implements.
 
 Adding a new mathematical system (Maxwell, Schrödinger, Navier-Stokes)
-= write one class that inherits from AbstractSimulator.
+= write one class that inherits from AbstractManifoldDynamics.
 kaft.simulate() stays clean. The library never changes.
 """
 
@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 
-class AbstractSimulator(ABC):
+class AbstractManifoldDynamics(ABC):
 
     @abstractmethod
     def run(self, manifold: dict, dt: float = 1.0) -> dict:

@@ -2,20 +2,20 @@
 Runs two simulators on the SAME manifold.
 Returns their evolved topologies and the divergence between them.
 
-compare(KAFTSimulator(), SoftmaxSimulator(), manifold=state)
+compare(KAFTEvolution(), EuclideanBaseline(), manifold=state)
 
 """
 from __future__ import annotations
 import numpy as np
-from kaft.simulate.base import AbstractSimulator
+from kaft.simulate.base import AbstractManifoldDynamics
 from kaft.core.manifold import Manifold
 from kaft.core.metric import FisherRaoMetric
 from kaft.core.topology import KDensity
 
 
 def compare(
-    model_a: AbstractSimulator,
-    model_b: AbstractSimulator,
+    model_a: AbstractManifoldDynamics,
+    model_b: AbstractManifoldDynamics,
     manifold: Manifold,
     steps: int = 20,
     dt: float = 0.1,

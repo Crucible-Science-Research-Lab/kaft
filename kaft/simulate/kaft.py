@@ -1,5 +1,5 @@
 """
-KAFTSimulator — the flagship model.
+KAFTEvolution — the flagship model.
 
 Master evolution equation:
     ∂K/∂t = c·v²_cog·K² + P(V)·∇^FR(K) + ξ_J(t)
@@ -15,14 +15,14 @@ Wave equation admits sech² bright soliton solutions:
 """
 from __future__ import annotations
 import numpy as np
-from kaft.simulate.base import AbstractSimulator
+from kaft.simulate.base import AbstractManifoldDynamics
 from kaft.core.manifold import Manifold
 from kaft.core.metric import FisherRaoMetric
 from kaft.core.topology import KDensity, JordanBoundary
 from kaft.core.resonance import ResonanceField
 
 
-class KAFTSimulator(AbstractSimulator):
+class KAFTEvolution(AbstractManifoldDynamics):
     """
     KAFT dynamics — master equation emergent from composed primitives.
 

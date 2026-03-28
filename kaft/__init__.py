@@ -10,12 +10,13 @@ from kaft.core.metric import FisherRaoMetric
 from kaft.core.topology import KDensity, JordanBoundary
 from kaft.core.resonance import ResonanceField
 from kaft.simulate.compare import compare
-from kaft.simulate.kaft import KAFTSimulator
-from kaft.simulate.softmax import SoftmaxSimulator
-from kaft.simulate.base import AbstractSimulator
+from kaft.simulate.kaft import KAFTEvolution
+from kaft.simulate.softmax import EuclideanBaseline
+from kaft.simulate.base import AbstractManifoldDynamics
 from kaft.ingest.router import ArxivRouter
+from kaft.geometry.divergences import AbstractMetric, DivergenceRegistry
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__  = "Crucible Science"
 
 __all__ = [
@@ -25,7 +26,8 @@ __all__ = [
     "KDensity", "JordanBoundary",
     "ResonanceField",
     # Simulation
-    "KAFTSimulator", "SoftmaxSimulator",
-    "AbstractSimulator",
+    "KAFTEvolution", "EuclideanBaseline",
+    "AbstractManifoldDynamics",
     "compare",
+    "AbstractMetric", "DivergenceRegistry",
 ]

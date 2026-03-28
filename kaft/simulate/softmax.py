@@ -1,5 +1,5 @@
 """
-SoftmaxSimulator — flat Euclidean attention baseline.
+EuclideanBaseline — flat Euclidean attention baseline.
 
 Softmax attention = dot product in R^d_k = flat metric tensor g_uv = δ_uv.
 Knowledge K = Σ(I_i). Static geometry, recomputed at every layer.
@@ -9,13 +9,13 @@ Two topologies diverge live. Researcher sees it without needing Čencov.
 """
 from __future__ import annotations
 import numpy as np
-from kaft.simulate.base import AbstractSimulator
+from kaft.simulate.base import AbstractManifoldDynamics
 from kaft.core.manifold import Manifold
 from kaft.core.metric import FisherRaoMetric
 from kaft.core.topology import KDensity
 
 
-class SoftmaxSimulator(AbstractSimulator):
+class EuclideanBaseline(AbstractManifoldDynamics):
     """
     Flat Euclidean attention — the shadow.
 
