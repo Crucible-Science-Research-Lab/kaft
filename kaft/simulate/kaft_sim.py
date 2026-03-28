@@ -16,6 +16,10 @@ Wave equation admits sech² bright soliton solutions:
 from __future__ import annotations
 import numpy as np
 from kaft.simulate.base import AbstractManifoldDynamics
+#from kaft.simulate.kaft_sim import KAFTEvolution      
+#from kaft.simulate.softmax_sim import EuclideanBaseline  
+
+from kaft.simulate.base import AbstractManifoldDynamics 
 from kaft.core.manifold import Manifold
 from kaft.core.metric import FisherRaoMetric
 from kaft.core.topology import KDensity, JordanBoundary

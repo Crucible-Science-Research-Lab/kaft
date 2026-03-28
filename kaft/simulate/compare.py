@@ -11,6 +11,7 @@ from kaft.simulate.base import AbstractManifoldDynamics
 from kaft.core.manifold import Manifold
 from kaft.core.metric import FisherRaoMetric
 from kaft.core.topology import KDensity
+#from kaft.simulate.kaft_sim import KAFTEvolution
 
 
 def compare(

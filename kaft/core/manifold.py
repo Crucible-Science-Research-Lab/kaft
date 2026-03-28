@@ -23,6 +23,28 @@ class Manifold:
     metric_tensor: np.ndarray | None = None
     k_density: np.ndarray | None = None
     jordan_boundaries: list | None = None
+    @classmethod
+    def from_arrays(
+        cls,
+        vectors: np.ndarray,
+        metadata: list | None = None,
+        domain_type: str = "auto",
+    ) -> "Manifold":
+        """
+        Create a Manifold directly from raw numeric vectors.
+        No text required — works for any domain.
+        """
+        if vectors.ndim != 2:
+            raise ValueError(f"vectors must be shape (N, d), got {vectors.shape}")
+        records = metadata if metadata is not None else [{"index": i} for i in range(len(vectors))]
+        return cls(
+            embeddings=np.array(vectors),
+            records=records,
+            domain_type=domain_type,
+        )
+
+
+
 
 
 def build_manifold(records: list[dict], domain_type: str = "auto") -> Manifold:

@@ -181,7 +181,7 @@ pytest tests/ -v
 ## Background
 
 `kaft` is the reference implementation of
-**Knowledge Attention Field Theory** —
+**Knowledge Attention Field Theory** -
 a geometric framework for knowledge dynamics on Riemannian information manifolds.
 
 Built at [Crucible Science](https://cruciblescience.com).
