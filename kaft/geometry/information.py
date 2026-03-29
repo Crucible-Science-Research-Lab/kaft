@@ -1,81 +1,7 @@
-"""
 
-
-Layer 0: Abstract metric interface and divergence registry.
-Any distance/divergence measure can be registered here —
-Fisher-Rao, KL, Hellinger, Euclidean, Minkowski, or custom.
-"""
-
-from __future__ import annotations
-from kaft.geometry.base import AbstractMetric
 import numpy as np
+from kaft.geometry.base import AbstractMetric
 
-
-class EuclideanMetric(AbstractMetric):
-    """Flat Euclidean distance — the baseline geometry."""
-
-    def distances(self, vectors: np.ndarray) -> np.ndarray:
-        diff = vectors[:, None, :] - vectors[None, :, :]
-        return np.sqrt((diff ** 2).sum(axis=-1))
-
-    def geometry_type(self) -> str:
-        return "euclidean"
-
-
-class GaussianCurvedMetric(AbstractMetric):
-    """
-    A manifold with a Gaussian curvature bump at the centre.
-    Wave speed is locally reduced where curvature is highest —
-    causing wavefronts to bend, slow, and distort visibly.
-    """
-
-    def __init__(self, curvature_strength: float = 0.85, width: float = 0.25):
-        self.curvature_strength = curvature_strength
-        self.width = width
-
-    def distances(self, vectors: np.ndarray) -> np.ndarray:
-        # Flat Euclidean baseline — curvature lives in the wave speed field
-        diff = vectors[:, None, :] - vectors[None, :, :]
-        return np.sqrt((diff ** 2).sum(axis=-1))
-
-    def speed_field(self, grid_size: int) -> np.ndarray:
-        """
-        Returns a 2D array of local wave speeds.
-        1.0 = flat, <1.0 = curved (slower propagation).
-        """
-        cx, cy = grid_size // 2, grid_size // 2
-        x = np.arange(grid_size)
-        y = np.arange(grid_size)
-        xx, yy = np.meshgrid(x, y)
-        r2 = ((xx - cx) / (self.width * grid_size))**2 + \
-             ((yy - cy) / (self.width * grid_size))**2
-        bump = np.exp(-r2)
-        return 1.0 - self.curvature_strength * bump
-
-    def geometry_type(self) -> str:
-        return "curved"
-
-
-class MinkowskiMetric(AbstractMetric):
-    """
-    Spacetime metric with a light cone speed limit.
-    Wavefronts cannot propagate beyond c * t from the source.
-    """
-
-    def __init__(self, c: float = 0.6):
-        self.c = c   # speed of light in grid units
-
-    def distances(self, vectors: np.ndarray) -> np.ndarray:
-        diff = vectors[:, None, :] - vectors[None, :, :]
-        spatial = np.sqrt((diff ** 2).sum(axis=-1))
-        return spatial
-
-    def speed_field(self, grid_size: int) -> np.ndarray:
-        """Uniform speed — the cone comes from the wave equation structure."""
-        return np.full((grid_size, grid_size), self.c)
-
-    def geometry_type(self) -> str:
-        return "minkowski"
 
 
 class FisherRaoMetric(AbstractMetric):
@@ -199,6 +125,7 @@ class JensenShannonMetric(AbstractMetric):
         return "jensen_shannon"
     
 
+
 class AlphaDivergence(AbstractMetric):
     """
     Alpha-divergence — the parametric family that unifies information geometry.
@@ -261,45 +188,3 @@ class AlphaDivergence(AbstractMetric):
     def geometry_type(self) -> str:
         return f"alpha_{self.alpha:.2f}"
 
-
-    """
-    Registry of named metric/divergence implementations.
-
-    Usage
-    -----
-    registry = DivergenceRegistry()
-    registry.register("euclidean", EuclideanMetric)
-    metric = registry.get("euclidean")
-    distances = metric.distances(vectors)
-    """
-
-    def __init__(self) -> None:
-        self._registry: Dict[str, Type[AbstractMetric]] = {}
-        self.register("euclidean", EuclideanMetric)
-        self.register("gaussian_curved", GaussianCurvedMetric)
-        self.register("minkowski", MinkowskiMetric)
-        self.register("fisher_rao", FisherRaoMetric)
-        self.register("kl_divergence", KLDivergence)
-        self.register("jensen_shannon", JensenShannonMetric)
-        self._registry["alpha_hellinger"]    = AlphaDivergence(alpha=0.0)
-        self._registry["alpha_bhattacharyya"] = AlphaDivergence(alpha=0.5)
-        self._registry["alpha_reverse"]      = AlphaDivergence(alpha=-0.5) # reverse-KL direction
-
-
-    def register(self, name: str, metric_cls: Type[AbstractMetric]) -> None:
-        """Register a metric class under a string key."""
-        if not issubclass(metric_cls, AbstractMetric):
-            raise TypeError(f"{metric_cls} must subclass AbstractMetric")
-        self._registry[name] = metric_cls
-
-    def get(self, name: str) -> AbstractMetric:
-        """Instantiate and return a registered metric by name."""
-        if name not in self._registry:
-            available = list(self._registry.keys())
-            raise KeyError(f"Metric '{name}' not found. Available: {available}")
-        obj = self._registry[name]
-        return obj() if isinstance(obj, type) else obj
-
-    def available(self) -> list:
-        """List all registered metric names."""
-        return list(self._registry.keys())

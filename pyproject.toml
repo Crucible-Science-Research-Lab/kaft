@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kaft"
-version = "0.1.0"
+version = "0.2.0"
 description = "Information geometry engine — Fisher-Rao manifolds, Jordan boundaries, K-density navigation"
 readme = "README.md"
 requires-python = ">=3.9"

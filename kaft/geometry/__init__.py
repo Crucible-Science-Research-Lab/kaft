@@ -1,5 +1,9 @@
-def __init__(self) -> None:
-    self._registry: Dict[str, Type[AbstractMetric]] = {}
-    self.register("euclidean", EuclideanMetric)
-    self.register("gaussian_curved", GaussianCurvedMetric)
-    self.register("minkowski", MinkowskiMetric)
+from kaft.geometry.base import AbstractMetric, DivergenceRegistry
+from kaft.geometry.classical import EuclideanMetric, MinkowskiMetric, GaussianCurvedMetric
+from kaft.geometry.information import FisherRaoMetric, KLDivergence, JensenShannonMetric, AlphaDivergence
+
+__all__ = [
+    "AbstractMetric", "DivergenceRegistry",
+    "EuclideanMetric", "MinkowskiMetric", "GaussianCurvedMetric",
+    "FisherRaoMetric", "KLDivergence", "JensenShannonMetric", "AlphaDivergence",
+]

@@ -14,7 +14,7 @@ from kaft.simulate.kaft_sim import KAFTEvolution
 from kaft.simulate.softmax_sim import EuclideanBaseline
 from kaft.simulate.base import AbstractManifoldDynamics
 from kaft.ingest.router import ArxivRouter
-from kaft.geometry.divergences import AbstractMetric, DivergenceRegistry, FisherRaoMetric
+from kaft.geometry import DivergenceRegistry, AbstractMetric
 
 
 __version__ = "0.2.0"
@@ -30,5 +30,7 @@ __all__ = [
     "KAFTEvolution", "EuclideanBaseline",
     "AbstractManifoldDynamics",
     "compare",
-    "AbstractMetric", "DivergenceRegistry", "FisherRaoMetric"
+    "AbstractMetric", "DivergenceRegistry", 
+    "FisherRaoMetric", 
+    "KLDivergence" , "JensenShannonMetric", "AlphaDivergence"
 ]
