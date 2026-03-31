@@ -21,3 +21,7 @@ kaft/experiments/geometric_state_arxiv.json
 
 # OS noise
 .DS_Store
+experiments/seeds/
+experiments/output/
+experiments/seeds/
+experiments/output/

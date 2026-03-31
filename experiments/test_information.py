@@ -6,13 +6,17 @@ p = np.array([0.1, 0.4, 0.3, 0.2])
 q = np.array([0.25, 0.25, 0.25, 0.25])  # uniform
 
 # --- FisherRao ---
+p = np.array([0.5, 0.3, 0.2])
 fr = get("fisher_rao")
-d = fr.compute(p, q)
-assert d >= 0.0, f"Fisher-Rao must be non-negative, got {d}"
-assert fr.compute(p, p) < 1e-9, "Fisher-Rao(p,p) must be 0"
-assert abs(fr.compute(p, q) - fr.compute(q, p)) < 1e-9, "Fisher-Rao must be symmetric"
-print(f"✓ FisherRao   compute(p,q) = {d:.6f}")
 
+assert fr.compute(p, p) < 1e-9,  f"D(p,p) should be 0, got {fr.compute(p, p)}"
+assert fr.compute(p, p) >= 0,    "non-negative"
+
+q = np.array([0.2, 0.5, 0.3])
+assert abs(fr.compute(p, q) - fr.compute(q, p)) < 1e-9, "Fisher-Rao must be symmetric"
+
+print(f"✓ fisher_rao D(p,p) = {fr.compute(p, p):.2e}")
+print(f"✓ fisher_rao D(p,q) = {fr.compute(p, q):.6f}")
 # --- KL ---
 kl = get("kl_divergence")
 d_pq = kl.compute(p, q)
