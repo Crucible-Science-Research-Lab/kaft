@@ -1,5 +1,12 @@
-from kaft.simulate.compare import compare
-from kaft.simulate.kaft_sim import KAFTEvolution
-from kaft.simulate.softmax_sim import EuclideanBaseline
+from kaft.simulate.base       import AbstractManifoldDynamics
+from kaft.simulate.crucible   import SimulationCrucible
+from kaft.simulate.runner     import SimulationRunner, Frame
+from kaft.simulate.visualiser import SimulationVisualiser
 
-__all__ = ["compare", "KAFTEvolution", "EuclideanBaseline"]
+__all__ = [
+    "AbstractManifoldDynamics",
+    "SimulationCrucible",
+    "SimulationRunner",
+    "Frame",
+    "SimulationVisualiser",
+]

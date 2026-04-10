@@ -35,6 +35,12 @@ dependencies = [
 molecular = ["rdkit>=2023.3"]
 dev = ["pytest", "black", "build", "twine"]
 
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::urllib3.exceptions.NotOpenSSLWarning",
+]
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["kaft*"]

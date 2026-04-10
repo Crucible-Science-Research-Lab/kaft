@@ -202,7 +202,7 @@ class SimulationRunner:
         self._evolver.step(self._kd, K_field)
 
         # 8. L1 divergence between KAFT and Softmax K distributions
-        divergence = self._softmax.shadow_divergence(K_field, sm_result.K)
+        divergence = self._softmax.distribution_divergence(K_field, sm_result.K)
 
         # 9. Capture Frame
         frame = Frame(

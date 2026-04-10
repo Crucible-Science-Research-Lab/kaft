@@ -9,11 +9,11 @@ import numpy as np
 class SoftmaxResult(NamedTuple):
     """Output of SoftmaxDynamics.run().
 
-    K       : (N,) knowledge density per node — softmax-weighted mass sum
+    K       : (N,) activation density per node — softmax-weighted mass sum
     attn    : (N, N) row-stochastic attention matrix
     K_mean  : float
     K_std   : float
-    K_var   : float — primary comparison signal vs KAFT
+    K_var   : float — primary comparison signal vs geometric attention
     """
     K:       np.ndarray
     attn:    np.ndarray
@@ -26,20 +26,21 @@ class SoftmaxResult(NamedTuple):
 class SoftmaxDynamics:
     """Flat dot-product attention baseline.
 
-    Honest comparison to KAFT geodesic gravity:
+    Comparison to geometric geodesic attention:
 
-        KAFT:    K_i = Σ_j  (I_i · I_j) / d²_FR(i,j)   ← curved space, geodesic d
-        Softmax: K_i = Σ_j  attn_ij  ·  I_j             ← flat space, cosine d
+        Geometric: K_i = Σ_j  (I_i · I_j) / d²_FR(i,j)   ← curved space, geodesic d
+        Softmax:   K_i = Σ_j  attn_ij  ·  I_j             ← flat space, cosine d
 
     Both aggregate semantic mass from all neighbours.
-    KAFT uses Fisher-Rao geodesic distance.
+    Geometric attention uses Fisher-Rao geodesic distance.
     Softmax uses scaled cosine dot-product and normalises it into a flat weight.
 
-    The geometry is the only difference.  That's the experiment.
+    The geometry is the only independent variable.
 
-    Expected result (Shadow Principle):
-        - KAFT:    K_i varies widely — attractor nodes, bridges, periphery visible
-        - Softmax: K_i ≈ mean(I) for all i — flat, no domain structure
+    Expected result:
+        - Geometric: K_i varies across nodes — high-density attractors, 
+                     cross-domain bridges, and peripheral nodes are distinguishable
+        - Softmax:   K_i ≈ mean(I) for all i — uniform, no domain structure visible
 
     Args:
         temperature: scales the sqrt(D) denominator.
@@ -50,7 +51,7 @@ class SoftmaxDynamics:
     temperature: float = 1.0
 
     def run(self, embeddings: np.ndarray) -> SoftmaxResult:
-        """Compute softmax K for all N nodes.
+        """Compute softmax activation density for all N nodes.
 
         Args:
             embeddings: (N, D) raw unnormalised float32 from Embedder.
@@ -88,16 +89,17 @@ class SoftmaxDynamics:
             K_var=float(K.var()),
         )
 
-    def shadow_divergence(
+    def distribution_divergence(
         self, K_kaft: np.ndarray, K_softmax: np.ndarray
     ) -> float:
-        """L1 divergence between normalised KAFT and Softmax K distributions.
+        """L1 divergence between normalised geometric and flat-space activation distributions.
 
-        Shadow Principle metric:
-            0.0 = identical distributions (KAFT == Softmax)
+        Measures structural difference between the two attention regimes:
+            0.0 = identical distributions
             1.0 = maximally different
 
-        Soliton lock expected: divergence reaches a plateau and holds.
+        A stable plateau in this value indicates the geometric activation
+        distribution has reached a fixed point relative to the flat baseline.
         """
         def _normalise(x: np.ndarray) -> np.ndarray:
             s = x.sum()

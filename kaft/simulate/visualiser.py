@@ -98,124 +98,124 @@ def _mark_soliton(ax: plt.Axes, frames: List[Frame]) -> None:
             break
 
 
-def plot_topology_map(
-    self,
-    embeddings:  np.ndarray,
-    records:     list[dict],
-    umap_reducer = None,
-    source_idx:  int = 0,
-    target_idx:  int = -1,
-    metric = None,
-    save_path: Optional[str] = None,
-) -> tuple[plt.Figure, plt.Axes]:
-    """
-    2D UMAP topology map — nodes sized by K-density, colored by domain,
-    Jordan boundaries marked, FR geodesic arc overlaid.
+# def plot_topology_map(
+#     self,
+#     embeddings:  np.ndarray,
+#     records:     list[dict],
+#     umap_reducer = None,
+#     source_idx:  int = 0,
+#     target_idx:  int = -1,
+#     metric = None,
+#     save_path: Optional[str] = None,
+# ) -> tuple[plt.Figure, plt.Axes]:
+#     """
+#     2D UMAP topology map — nodes sized by K-density, colored by domain,
+#     Jordan boundaries marked, FR geodesic arc overlaid.
 
-    Parameters
-    ----------
-    embeddings   : (N, D) raw embeddings
-    records      : parallel record list
-    umap_reducer : fitted UMAP instance or None (fits fresh)
-    source_idx   : geodesic source node index
-    target_idx   : geodesic target node index (-1 = last node)
-    metric       : AbstractMetric for geodesic tracing
-    save_path    : optional PNG/PDF output path
-    """
-    from umap import UMAP
-    from kaft.navigate.geodesic import GeodesicNavigator
-    import matplotlib.patches as mpatches
+#     Parameters
+#     ----------
+#     embeddings   : (N, D) raw embeddings
+#     records      : parallel record list
+#     umap_reducer : fitted UMAP instance or None (fits fresh)
+#     source_idx   : geodesic source node index
+#     target_idx   : geodesic target node index (-1 = last node)
+#     metric       : AbstractMetric for geodesic tracing
+#     save_path    : optional PNG/PDF output path
+#     """
+#     from umap import UMAP
+#     from kaft.navigate.geodesic import GeodesicNavigator
+#     import matplotlib.patches as mpatches
 
-    last_frame = self.log[-1]
-    density    = last_frame.K_field
-    N          = len(embeddings)
-    target_idx = target_idx % N
+#     last_frame = self.log[-1]
+#     density    = last_frame.K_field
+#     N          = len(embeddings)
+#     target_idx = target_idx % N
 
-    # UMAP projection — reuse existing fit if passed in
-    if umap_reducer is None:
-        umap_reducer = UMAP(n_components=2, random_state=42,
-                            n_neighbors=15, min_dist=0.1)
-        coords = umap_reducer.fit_transform(embeddings)
-    else:
-        coords = umap_reducer.transform(embeddings)
+#     # UMAP projection — reuse existing fit if passed in
+#     if umap_reducer is None:
+#         umap_reducer = UMAP(n_components=2, random_state=42,
+#                             n_neighbors=15, min_dist=0.1)
+#         coords = umap_reducer.fit_transform(embeddings)
+#     else:
+#         coords = umap_reducer.transform(embeddings)
 
-    # Geodesic arc (only if metric provided)
-    wp_2d = None
-    if metric is not None:
-        nav    = GeodesicNavigator(embeddings, records, metric, n_steps=40)
-        path   = nav.trace(source_idx, target_idx)
-        wp_emb = np.array([wp.embedding for wp in path.waypoints])
-        wp_2d  = umap_reducer.transform(wp_emb)
+#     # Geodesic arc (only if metric provided)
+#     wp_2d = None
+#     if metric is not None:
+#         nav    = GeodesicNavigator(embeddings, records, metric, n_steps=40)
+#         path   = nav.trace(source_idx, target_idx)
+#         wp_emb = np.array([wp.embedding for wp in path.waypoints])
+#         wp_2d  = umap_reducer.transform(wp_emb)
 
-    # Domain colors
-    palette = {
-        "math_geometry":  "#4f98a3",
-        "biology_crispr": "#6daa45",
-        "fusion_plasma":  "#fdab43",
-        "ai_transformer": "#a86fdf",
-        "unknown":        "#999999",
-    }
-    domain_list    = [r.get("domain", "unknown") for r in records]
-    unique_domains = sorted(set(domain_list))
-    colors         = [palette.get(d, "#999999") for d in domain_list]
-    sizes          = 20 + density * 180
+#     # Domain colors
+#     palette = {
+#         "math_geometry":  "#4f98a3",
+#         "biology_crispr": "#6daa45",
+#         "fusion_plasma":  "#fdab43",
+#         "ai_transformer": "#a86fdf",
+#         "unknown":        "#999999",
+#     }
+#     domain_list    = [r.get("domain", "unknown") for r in records]
+#     unique_domains = sorted(set(domain_list))
+#     colors         = [palette.get(d, "#999999") for d in domain_list]
+#     sizes          = 20 + density * 180
 
-    # Boundary indices from last frame
-    boundary_idxs = set()
-    for b in last_frame.__dict__.get("boundaries_raw", []):
-        boundary_idxs.add(b["boundary_point"])
+#     # Boundary indices from last frame
+#     boundary_idxs = set()
+#     for b in last_frame.__dict__.get("boundaries_raw", []):
+#         boundary_idxs.add(b["boundary_point"])
 
-    fig, ax = plt.subplots(figsize=(14, 10))
-    fig.patch.set_facecolor("#0f0e0c")
-    ax.set_facecolor("#171614")
+#     fig, ax = plt.subplots(figsize=(14, 10))
+#     fig.patch.set_facecolor("#0f0e0c")
+#     ax.set_facecolor("#171614")
 
-    ax.scatter(coords[:, 0], coords[:, 1], s=sizes, c=colors,
-               alpha=0.75, linewidths=0.3, edgecolors="white", zorder=2)
+#     ax.scatter(coords[:, 0], coords[:, 1], s=sizes, c=colors,
+#                alpha=0.75, linewidths=0.3, edgecolors="white", zorder=2)
 
-    if boundary_idxs:
-        b_coords = coords[list(boundary_idxs)]
-        ax.scatter(b_coords[:, 0], b_coords[:, 1], s=12, c="#ff4466",
-                   alpha=0.6, marker="x", linewidths=1.0, zorder=3,
-                   label="Jordan boundary")
+#     if boundary_idxs:
+#         b_coords = coords[list(boundary_idxs)]
+#         ax.scatter(b_coords[:, 0], b_coords[:, 1], s=12, c="#ff4466",
+#                    alpha=0.6, marker="x", linewidths=1.0, zorder=3,
+#                    label="Jordan boundary")
 
-    if wp_2d is not None:
-        ax.plot(wp_2d[:, 0], wp_2d[:, 1], color="#4f98a3",
-                linewidth=2.2, alpha=0.9, zorder=4, label="FR geodesic")
-        src, tgt = coords[source_idx], coords[target_idx]
-        ax.plot([src[0], tgt[0]], [src[1], tgt[1]], color="#fdab43",
-                linewidth=1.5, alpha=0.7, linestyle="--", zorder=4,
-                label="Euclidean chord")
-        ax.scatter(*src, s=220, c="#ffffff", zorder=5, marker="*")
-        ax.scatter(*tgt, s=220, c="#ffffff", zorder=5, marker="*")
+#     if wp_2d is not None:
+#         ax.plot(wp_2d[:, 0], wp_2d[:, 1], color="#4f98a3",
+#                 linewidth=2.2, alpha=0.9, zorder=4, label="FR geodesic")
+#         src, tgt = coords[source_idx], coords[target_idx]
+#         ax.plot([src[0], tgt[0]], [src[1], tgt[1]], color="#fdab43",
+#                 linewidth=1.5, alpha=0.7, linestyle="--", zorder=4,
+#                 label="Euclidean chord")
+#         ax.scatter(*src, s=220, c="#ffffff", zorder=5, marker="*")
+#         ax.scatter(*tgt, s=220, c="#ffffff", zorder=5, marker="*")
 
-    domain_patches = [
-        mpatches.Patch(color=palette.get(d, "#999"), label=d.replace("_", " "))
-        for d in unique_domains
-    ]
-    ax.legend(handles=domain_patches, loc="lower right", fontsize=8,
-              facecolor="#1c1b19", edgecolor="#393836",
-              labelcolor="white", framealpha=0.85)
+#     domain_patches = [
+#         mpatches.Patch(color=palette.get(d, "#999"), label=d.replace("_", " "))
+#         for d in unique_domains
+#     ]
+#     ax.legend(handles=domain_patches, loc="lower right", fontsize=8,
+#               facecolor="#1c1b19", edgecolor="#393836",
+#               labelcolor="white", framealpha=0.85)
 
-    ax.set_title("KAFT Knowledge Manifold — Topology Map",
-                 color="white", fontsize=14, pad=14, fontweight="bold")
-    ax.set_xlabel("UMAP dim 1", color="#7a7974", fontsize=9)
-    ax.set_ylabel("UMAP dim 2", color="#7a7974", fontsize=9)
-    ax.tick_params(colors="#7a7974")
-    for spine in ax.spines.values():
-        spine.set_edgecolor("#393836")
+#     ax.set_title("KAFT Knowledge Manifold — Topology Map",
+#                  color="white", fontsize=14, pad=14, fontweight="bold")
+#     ax.set_xlabel("UMAP dim 1", color="#7a7974", fontsize=9)
+#     ax.set_ylabel("UMAP dim 2", color="#7a7974", fontsize=9)
+#     ax.tick_params(colors="#7a7974")
+#     for spine in ax.spines.values():
+#         spine.set_edgecolor("#393836")
 
-    ax.text(0.01, 0.99,
-            f"N={N} | K={last_frame.K_mean:.3f} | "
-            f"Phase={last_frame.phase} | Boundaries={last_frame.boundary_count}",
-            transform=ax.transAxes, color="#7a7974", fontsize=8, va="top")
+#     ax.text(0.01, 0.99,
+#             f"N={N} | K={last_frame.K_mean:.3f} | "
+#             f"Phase={last_frame.phase} | Boundaries={last_frame.boundary_count}",
+#             transform=ax.transAxes, color="#7a7974", fontsize=8, va="top")
 
-    fig.tight_layout()
-    if save_path:
-        fig.savefig(save_path, dpi=150, bbox_inches="tight",
-                    facecolor=fig.get_facecolor())
-        print(f"[Visualiser] Topology map → {save_path}")
+#     fig.tight_layout()
+#     if save_path:
+#         fig.savefig(save_path, dpi=150, bbox_inches="tight",
+#                     facecolor=fig.get_facecolor())
+#         print(f"[Visualiser] Topology map → {save_path}")
 
-    return fig, ax
+#     return fig, ax
 
 # ── Visualiser ────────────────────────────────────────────────────────────────
 
@@ -269,6 +269,127 @@ class SimulationVisualiser:
             if save_path:
                 fig.savefig(save_path)
         return fig or ax.figure, ax
+    
+
+    def plot_topology_map(
+        self,
+        embeddings:  np.ndarray,
+        records:     list[dict],
+        umap_reducer = None,
+        source_idx:  int = 0,
+        target_idx:  int = -1,
+        metric = None,
+        save_path: Optional[str] = None,
+    ) -> tuple[plt.Figure, plt.Axes]:
+        """
+        2D UMAP topology map — nodes sized by K-density, colored by domain,
+        Jordan boundaries marked, FR geodesic arc overlaid.
+
+        Parameters
+        ----------
+        embeddings   : (N, D) raw embeddings
+        records      : parallel record list
+        umap_reducer : fitted UMAP instance or None (fits fresh)
+        source_idx   : geodesic source node index
+        target_idx   : geodesic target node index (-1 = last node)
+        metric       : AbstractMetric for geodesic tracing
+        save_path    : optional PNG/PDF output path
+        """
+        from umap import UMAP
+        from kaft.navigate.geodesic import GeodesicNavigator
+        import matplotlib.patches as mpatches
+
+        last_frame = self.log[-1]
+        density    = last_frame.K_field
+        N          = len(embeddings)
+        target_idx = target_idx % N
+
+        # UMAP projection — reuse existing fit if passed in
+        if umap_reducer is None:
+            umap_reducer = UMAP(n_components=2, random_state=42,
+                                n_neighbors=15, min_dist=0.1)
+            coords = umap_reducer.fit_transform(embeddings)
+        else:
+            coords = umap_reducer.transform(embeddings)
+
+        # Geodesic arc (only if metric provided)
+        wp_2d = None
+        if metric is not None:
+            nav    = GeodesicNavigator(embeddings, records, metric, n_steps=40)
+            path   = nav.trace(source_idx, target_idx)
+            wp_emb = np.array([wp.embedding for wp in path.waypoints])
+            wp_2d  = umap_reducer.transform(wp_emb)
+
+        # Domain colors
+        palette = {
+            "math_geometry":  "#4f98a3",
+            "biology_crispr": "#6daa45",
+            "fusion_plasma":  "#fdab43",
+            "ai_transformer": "#a86fdf",
+            "unknown":        "#999999",
+        }
+        domain_list    = [r.get("domain", "unknown") for r in records]
+        unique_domains = sorted(set(domain_list))
+        colors         = [palette.get(d, "#999999") for d in domain_list]
+        sizes          = 20 + density * 180
+
+        # Boundary indices from last frame
+        boundary_idxs = set()
+        for b in last_frame.__dict__.get("boundaries_raw", []):
+            boundary_idxs.add(b["boundary_point"])
+
+        fig, ax = plt.subplots(figsize=(14, 10))
+        fig.patch.set_facecolor("#0f0e0c")
+        ax.set_facecolor("#171614")
+
+        ax.scatter(coords[:, 0], coords[:, 1], s=sizes, c=colors,
+                alpha=0.75, linewidths=0.3, edgecolors="white", zorder=2)
+
+        if boundary_idxs:
+            b_coords = coords[list(boundary_idxs)]
+            ax.scatter(b_coords[:, 0], b_coords[:, 1], s=12, c="#ff4466",
+                    alpha=0.6, marker="x", linewidths=1.0, zorder=3,
+                    label="Jordan boundary")
+
+        if wp_2d is not None:
+            ax.plot(wp_2d[:, 0], wp_2d[:, 1], color="#4f98a3",
+                    linewidth=2.2, alpha=0.9, zorder=4, label="FR geodesic")
+            src, tgt = coords[source_idx], coords[target_idx]
+            ax.plot([src[0], tgt[0]], [src[1], tgt[1]], color="#fdab43",
+                    linewidth=1.5, alpha=0.7, linestyle="--", zorder=4,
+                    label="Euclidean chord")
+            ax.scatter(*src, s=220, c="#ffffff", zorder=5, marker="*")
+            ax.scatter(*tgt, s=220, c="#ffffff", zorder=5, marker="*")
+
+        domain_patches = [
+            mpatches.Patch(color=palette.get(d, "#999"), label=d.replace("_", " "))
+            for d in unique_domains
+        ]
+        ax.legend(handles=domain_patches, loc="lower right", fontsize=8,
+                facecolor="#1c1b19", edgecolor="#393836",
+                labelcolor="white", framealpha=0.85)
+
+        ax.set_title("KAFT Knowledge Manifold — Topology Map",
+                    color="white", fontsize=14, pad=14, fontweight="bold")
+        ax.set_xlabel("UMAP dim 1", color="#7a7974", fontsize=9)
+        ax.set_ylabel("UMAP dim 2", color="#7a7974", fontsize=9)
+        ax.tick_params(colors="#7a7974")
+        for spine in ax.spines.values():
+            spine.set_edgecolor("#393836")
+
+        ax.text(0.01, 0.99,
+                f"N={N} | K={last_frame.K_mean:.3f} | "
+                f"Phase={last_frame.phase} | Boundaries={last_frame.boundary_count}",
+                transform=ax.transAxes, color="#7a7974", fontsize=8, va="top")
+
+        fig.tight_layout()
+        if save_path:
+            fig.savefig(save_path, dpi=150, bbox_inches="tight",
+                        facecolor=fig.get_facecolor())
+            print(f"[Visualiser] Topology map → {save_path}")
+
+        return fig, ax
+
 
     def plot_variance(
         self,
