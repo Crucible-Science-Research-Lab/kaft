@@ -17,7 +17,6 @@ __all__ = [
     # Core geometry
     "KDensity",
     # Simulation
-    "KAFTEvolution",
     "AbstractManifoldDynamics",
     "AbstractMetric", "DivergenceRegistry", 
     "FisherRaoMetric", 

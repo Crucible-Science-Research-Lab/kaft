@@ -47,7 +47,7 @@ where d is geodesic distance on the Fisher-Rao manifold, not Euclidean distance.
 High K = dense semantic cluster. Low K = open conceptual space.
 
 **Jordan boundaries**
-Emergent domain separators — NOT configurable parameters.
+Emergent domain separators.
 They crystallise as level sets of K-density gradients from the geometry itself.
 Hallucination prevention: crossing a boundary requires discrete energy accumulation,
 not smooth interpolation.
@@ -170,7 +170,7 @@ pip install kaft
 
 **Development:**
 ```bash
-git clone https://github.com/crucible-science/kaft
+git clone https://github.com/Crucible-Science-Research-Lab/kaft
 cd kaft
 pip install -e ".[dev]"
 pytest tests/ -v

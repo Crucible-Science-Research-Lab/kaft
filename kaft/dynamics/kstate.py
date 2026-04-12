@@ -13,11 +13,11 @@ from kaft.geometry.base import AbstractMetric
 
 # ── 5F Phase thresholds ──────────────────────────────────────────────────────
 PHASE_THRESHOLDS: dict[str, tuple[float, float]] = {
-    "Holofractal":        (0.0,  0.3),   # wide aperture, exploration
-    "Resonance_Spheres":  (0.3,  0.6),   # concepts clustering, first connections
-    "Fractal_Causality":  (0.6,  0.9),   # causal chains explicit, geodesic locks
-    "Toroidal_Resonance": (0.9,  1.2),   # K² firing, recursive depth
-    "Fracture_Lines":     (1.2,  float("inf")),  # crystallization ready
+    "diffuse":        (0.0,  0.3),   # wide aperture, exploration
+    "clustering":  (0.3,  0.6),   # concepts clustering, first connections
+    "locked":  (0.6,  0.9),   # causal chains explicit, geodesic locks
+    "recursive": (0.9,  1.2),   # K² firing, recursive depth
+    "saturated":     (1.2,  float("inf")),  # crystallization ready
 }
 
 SOLITON_LOCK_THRESHOLD = 1e-4   # |ΔK| below this = soliton candidate

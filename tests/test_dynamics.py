@@ -16,8 +16,8 @@ def test_kstate_phase_valid(warmed_kd):
     from kaft.dynamics.kstate import KState
     ks = KState()
     ks.update(warmed_kd.density)
-    valid = {"Holofractal","Resonance_Spheres","Fractal_Causality",
-             "Toroidal_Resonance","Fracture_Lines"}
+    valid = {"diffuse","clustering","locked",
+             "recursive","saturated"}
     assert ks.phase in valid
 
 def test_kstate_delta_k_zero_on_first(warmed_kd):
