@@ -14,6 +14,10 @@ build/
 kaft/experiments/geometric_state.json
 kaft/experiments/geometric_state_arxiv.json
 
+
+stubs/
+README_pypi.md
+
 # Credentials — absolutely never
 .pypirc
 *.env
